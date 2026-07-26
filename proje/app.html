@@ -2,50 +2,43 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<title>AI Dialog</title>
+<title>GTA Dialog AI</title>
 <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
 <body class="bg-[#0b0f1a] text-white h-screen flex">
 
-<!-- LEFT PANEL -->
-<div class="w-1/4 bg-[#111827] p-4 border-r border-gray-700">
+<!-- SOL -->
+<div class="w-1/4 bg-[#111827] p-4">
 
-<h2 class="text-lg mb-3">Karakterler</h2>
+<h2 class="mb-3">Diyalog</h2>
 
-<input id="char1" placeholder="Karakter 1" class="w-full p-2 mb-2 bg-gray-800 rounded">
-<input id="char2" placeholder="Karakter 2" class="w-full p-2 mb-4 bg-gray-800 rounded">
+<textarea id="dialog" class="w-full h-40 p-2 bg-gray-800 rounded mb-4"
+placeholder="Ali: Selam\nVeli: Naber"></textarea>
 
-<h2 class="text-lg mb-2">Senaryo</h2>
+<button onclick="generateAI()" class="bg-purple-600 w-full p-2 rounded mb-2">
+AI Üret
+</button>
 
-<textarea id="story" class="w-full h-32 p-2 bg-gray-800 rounded mb-4"
-placeholder="Ne oluyor?"></textarea>
-
-<button onclick="generate()" class="bg-purple-600 w-full p-2 rounded">
-Diyalog Üret
+<button onclick="draw()" class="bg-green-600 w-full p-2 rounded">
+Resme Yaz
 </button>
 
 </div>
 
-<!-- RIGHT -->
-<div class="flex-1 p-6 flex flex-col">
+<!-- SAĞ -->
+<div class="flex-1 p-6">
 
 <input type="file" id="upload" class="mb-4">
 
-<canvas id="canvas" class="border border-gray-700 rounded mb-4"></canvas>
-
-<textarea id="dialog" class="w-full bg-gray-800 p-3 rounded mb-3"
-placeholder="Diyalog..."></textarea>
-
-<button onclick="draw()" class="bg-green-600 p-2 rounded">
-Resme Yaz
-</button>
+<canvas id="canvas" class="border border-gray-700 rounded"></canvas>
 
 </div>
 
 <script>
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
+
 let img = null;
 
 upload.onchange = e=>{
@@ -64,11 +57,10 @@ function draw(){
  if(!img) return;
  ctx.drawImage(img,0,0);
 
- ctx.fillStyle = "white";
- ctx.font = "28px Arial";
+ ctx.fillStyle="white";
+ ctx.font="28px Arial";
 
- const text = document.getElementById("dialog").value;
- const lines = text.split("\n");
+ const lines = document.getElementById("dialog").value.split("\\n");
 
  let y = 60;
  lines.forEach(line=>{
@@ -77,21 +69,24 @@ function draw(){
  });
 }
 
-async function generate(){
- const c1 = char1.value;
- const c2 = char2.value;
- const story = document.getElementById("story").value;
+async function generateAI(){
 
- const prompt = `Kısa GTA tarzı diyalog yaz:\n${c1}:\n${c2}:\nKonu: ${story}`;
+ const prompt = "kısa komik diyalog yaz 2 karakter arasında";
 
- const res = await fetch("https://YOUR_RENDER/chat",{
+ const res = await fetch("https://openrouter.ai/api/v1/chat/completions",{
    method:"POST",
-   headers:{"Content-Type":"application/json"},
-   body:JSON.stringify({message: prompt})
+   headers:{
+     "Authorization":"Bearer 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",
+     "Content-Type":"application/json"
+   },
+   body:JSON.stringify({
+     model:"openai/gpt-3.5-turbo",
+     messages:[{role:"user",content:prompt}]
+   })
  });
 
  const data = await res.json();
- document.getElementById("dialog").value = data.reply;
+ document.getElementById("dialog").value = data.choices[0].message.content;
 }
 </script>
 
