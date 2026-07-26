@@ -84,7 +84,7 @@ async function generate(){
 
  const prompt = `Kısa GTA tarzı diyalog yaz:\n${c1}:\n${c2}:\nKonu: ${story}`;
 
- const res = await fetch("https://YOUR_RENDER/chat",{
+ const res = await fetch("https://ai-backend-dshy.onrender.com/chat",{
    method:"POST",
    headers:{"Content-Type":"application/json"},
    body:JSON.stringify({message: prompt})
