@@ -1,0 +1,22 @@
+!!!OKU_BUNU_ONEMLI!!!
+
+1. Firebase kur:
+console.firebase.google.com
+→ config'i index.html'e koy
+
+2. OpenRouter API:
+https://openrouter.ai
+→ key al → server.js içine koy
+
+3. Render:
+- new web service
+- start: node server.js
+
+4. Netlify:
+- index.html + app.html yükle
+
+5. app.html içinde:
+https://YOUR_RENDER/chat
+→ kendi linkinle değiştir
+
+BİTTİ

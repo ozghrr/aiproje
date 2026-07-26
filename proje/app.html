@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>AI Dialog</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-[#0b0f1a] text-white h-screen flex">
+
+<!-- LEFT PANEL -->
+<div class="w-1/4 bg-[#111827] p-4 border-r border-gray-700">
+
+<h2 class="text-lg mb-3">Karakterler</h2>
+
+<input id="char1" placeholder="Karakter 1" class="w-full p-2 mb-2 bg-gray-800 rounded">
+<input id="char2" placeholder="Karakter 2" class="w-full p-2 mb-4 bg-gray-800 rounded">
+
+<h2 class="text-lg mb-2">Senaryo</h2>
+
+<textarea id="story" class="w-full h-32 p-2 bg-gray-800 rounded mb-4"
+placeholder="Ne oluyor?"></textarea>
+
+<button onclick="generate()" class="bg-purple-600 w-full p-2 rounded">
+Diyalog Üret
+</button>
+
+</div>
+
+<!-- RIGHT -->
+<div class="flex-1 p-6 flex flex-col">
+
+<input type="file" id="upload" class="mb-4">
+
+<canvas id="canvas" class="border border-gray-700 rounded mb-4"></canvas>
+
+<textarea id="dialog" class="w-full bg-gray-800 p-3 rounded mb-3"
+placeholder="Diyalog..."></textarea>
+
+<button onclick="draw()" class="bg-green-600 p-2 rounded">
+Resme Yaz
+</button>
+
+</div>
+
+<script>
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+let img = null;
+
+upload.onchange = e=>{
+ const file = e.target.files[0];
+ const i = new Image();
+ i.onload = ()=>{
+   canvas.width = i.width;
+   canvas.height = i.height;
+   ctx.drawImage(i,0,0);
+   img = i;
+ };
+ i.src = URL.createObjectURL(file);
+};
+
+function draw(){
+ if(!img) return;
+ ctx.drawImage(img,0,0);
+
+ ctx.fillStyle = "white";
+ ctx.font = "28px Arial";
+
+ const text = document.getElementById("dialog").value;
+ const lines = text.split("\n");
+
+ let y = 60;
+ lines.forEach(line=>{
+   ctx.fillText(line, 50, y);
+   y += 40;
+ });
+}
+
+async function generate(){
+ const c1 = char1.value;
+ const c2 = char2.value;
+ const story = document.getElementById("story").value;
+
+ const prompt = `Kısa GTA tarzı diyalog yaz:\n${c1}:\n${c2}:\nKonu: ${story}`;
+
+ const res = await fetch("https://YOUR_RENDER/chat",{
+   method:"POST",
+   headers:{"Content-Type":"application/json"},
+   body:JSON.stringify({message: prompt})
+ });
+
+ const data = await res.json();
+ document.getElementById("dialog").value = data.reply;
+}
+</script>
+
+</body>
+</html>
